@@ -19,17 +19,24 @@ resource "aws_egress_only_internet_gateway" "default" {
 /*
   Public Subnet
 */
+
+resource "aws_eip" "gwip" {}
+
+resource "aws_route_table" "eu-west-1-private" {
+  vpc_id = "${aws_vpc.default.id}"
+}
+
 resource "aws_subnet" "eu-west-1a-public" {
   vpc_id = "${aws_vpc.default.id}"
 
-  cidr_block        = "10.100.0.0/20"
+  cidr_block        = "10.10.1.0/24"
   availability_zone = "eu-west-1a"
 }
 
 resource "aws_subnet" "eu-west-1b-public" {
   vpc_id = "${aws_vpc.default.id}"
 
-  cidr_block        = "10.100.0.0/20"
+  cidr_block        = "10.10.2.0/24"
   availability_zone = "eu-west-1b"
 }
 
@@ -52,10 +59,9 @@ resource "aws_route_table_association" "eu-west-1-public-b" {
   route_table_id = "${aws_route_table.eu-west-1-public.id}"
 }
 
-
 resource "aws_nat_gateway" "gw" {
-  allocation_id = ""
-  subnet_id     = ""
+  allocation_id = "${aws_eip.gwip.id}"
+  subnet_id     = "${aws_subnet.eu-west-1a-public.id}"
 }
 
 /*
@@ -64,17 +70,16 @@ resource "aws_nat_gateway" "gw" {
 resource "aws_subnet" "eu-west-1a-private" {
   vpc_id = "${aws_vpc.default.id}"
 
-  cidr_block        = "10.10.0.0/22"
+  cidr_block        = "10.10.10.0/22"
   availability_zone = "eu-west-1a"
 }
 
 resource "aws_subnet" "eu-west-1b-private" {
   vpc_id = "${aws_vpc.default.id}"
 
-  cidr_block        = "10.100.0.0/22"
+  cidr_block        = "10.10.20.0/22"
   availability_zone = "eu-west-1b"
 }
-
 
 resource "aws_route" "igw-route" {
   destination_ipv6_cidr_block = "::/0"

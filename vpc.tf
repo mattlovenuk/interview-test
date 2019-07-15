@@ -40,6 +40,13 @@ resource "aws_subnet" "eu-west-1b-public" {
   availability_zone = "eu-west-1b"
 }
 
+resource "aws_subnet" "eu-west-1c-public" {
+  vpc_id = "${aws_vpc.default.id}"
+
+  cidr_block        = "10.10.3.0/24"
+  availability_zone = "eu-west-1c"
+}
+
 resource "aws_route_table" "eu-west-1-public" {
   vpc_id = "${aws_vpc.default.id}"
 
@@ -56,6 +63,11 @@ resource "aws_route_table_association" "eu-west-1-public-a" {
 
 resource "aws_route_table_association" "eu-west-1-public-b" {
   subnet_id      = "${aws_subnet.eu-west-1b-public.id}"
+  route_table_id = "${aws_route_table.eu-west-1-public.id}"
+}
+
+resource "aws_route_table_association" "eu-west-1-public-c" {
+  subnet_id      = "${aws_subnet.eu-west-1c-public.id}"
   route_table_id = "${aws_route_table.eu-west-1-public.id}"
 }
 
@@ -81,6 +93,13 @@ resource "aws_subnet" "eu-west-1b-private" {
   availability_zone = "eu-west-1b"
 }
 
+resource "aws_subnet" "eu-west-1c-private" {
+  vpc_id = "${aws_vpc.default.id}"
+
+  cidr_block        = "10.10.30.0/22"
+  availability_zone = "eu-west-1c"
+}
+
 resource "aws_route" "igw-route" {
   destination_ipv6_cidr_block = "::/0"
   egress_only_gateway_id      = "${aws_egress_only_internet_gateway.default.id}"
@@ -102,6 +121,11 @@ resource "aws_route_table_association" "eu-west-1-private-a" {
 
 resource "aws_route_table_association" "eu-west-1-private-b" {
   subnet_id      = "${aws_subnet.eu-west-1b-private.id}"
+  route_table_id = "${aws_route_table.eu-west-1-private.id}"
+}
+
+resource "aws_route_table_association" "eu-west-1-private-c" {
+  subnet_id      = "${aws_subnet.eu-west-1c-private.id}"
   route_table_id = "${aws_route_table.eu-west-1-private.id}"
 }
 
